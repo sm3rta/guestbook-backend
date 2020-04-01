@@ -1,0 +1,7 @@
+{
+  "name": "guestbook-backend",
+  "version": "1.0.0",
+  "description": "Back-end server for the guestbook web application",
+  "main": "index.js",
+  "author": "Ahmed Habeila <HabeilaAhmed@gmail.com>"
+}
