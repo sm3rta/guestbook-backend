@@ -4,8 +4,8 @@ const connectToDataBase = require("../utils/connectToDatabase");
 connectToDataBase();
 
 const userSchema = new mongoose.Schema({
+  email: String,
   name: String,
-  username: String,
   password: String
 });
 
