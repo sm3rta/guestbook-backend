@@ -12,7 +12,7 @@ const messageSchema = Joi.object({
   date: Joi.date()
 });
 
-router.put("/:messageId", async (req, res) => {
+router.patch("/:messageId", async (req, res) => {
   const validation = messageSchema.validate(req.body);
   if (validation.error) {
     return res
