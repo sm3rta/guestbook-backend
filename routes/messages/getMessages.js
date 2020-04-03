@@ -8,7 +8,8 @@ router.get("/", async (req, res) => {
     .populate({
       path: "replies",
       populate: { path: "submittedBy", select: ["_id", "name", "email"] }
-    });
+    })
+    .sort({ date: -1 });
 
   res.status(200).send({ error: false, data: { messages } });
 });
