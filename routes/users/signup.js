@@ -43,8 +43,14 @@ router.post("/", async (req, res) => {
 
   //all is well, create user document and add it to the database
   const user = new User({ name, email, password: hashPassword(password) });
-  const result = await user.save();
-  res.status(200).send({ error: false, message: "User added successfully" });
+  const savedUser = await user.save();
+  //delete password from object
+  savedUser.password = undefined;
+  res.status(200).send({
+    error: false,
+    message: "User added successfully",
+    data: savedUser
+  });
 });
 
 module.exports = router;
