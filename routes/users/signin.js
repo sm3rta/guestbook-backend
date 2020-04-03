@@ -6,7 +6,7 @@ const hashPassword = require("../../utils/hashPassword");
 
 const checkUserCredentials = async ({ email, password }) => {
   const user = await User.findOne({ email, password: hashPassword(password) });
-  return !!user;
+  return user;
 };
 
 const userSchema = Joi.object({
@@ -27,10 +27,13 @@ router.post("/", async (req, res) => {
   }
 
   //check if user alreeady exists
-  const credentialsResult = await checkUserCredentials(req.body);
+  const user = await checkUserCredentials(req.body);
 
-  if (credentialsResult) {
-    res.status(200).send({ error: false, message: "User login successful" });
+  if (user) {
+    user.password = undefined;
+    res
+      .status(200)
+      .send({ error: false, message: "User login successful", data: user });
   } else {
     res.status(401).send({ error: true, message: "Wrong email or password" });
   }
