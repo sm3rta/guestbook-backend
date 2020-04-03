@@ -33,7 +33,7 @@ router.post("/", async (req, res) => {
   message.replies.push(savedReply._id);
   const savedMessage = await message.save();
   console.log("savedMessage", savedMessage);
-  res.status(200).send({ error: false, message: "Message added successfully" });
+  res.status(200).send({ error: false, message: "Reply added successfully" });
 });
 
 module.exports = router;
