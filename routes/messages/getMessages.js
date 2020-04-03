@@ -4,8 +4,11 @@ const Message = require("../../schemas/message");
 
 router.get("/", async (req, res) => {
   const messages = await Message.find()
-    .populate("submittedBy")
-    .populate("replies");
+    .populate("submittedBy", ["_id", "name", "email"])
+    .populate({
+      path: "replies",
+      populate: { path: "submittedBy", select: ["_id", "name", "email"] }
+    });
 
   res.status(200).send({ error: false, data: { messages } });
 });
