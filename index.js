@@ -2,7 +2,18 @@ const express = require("express");
 const app = express();
 const cors = require("cors");
 
+//enable cors
 app.use(cors());
+
+//simulate loading
+const sleep = ms => {
+  return new Promise(resolve => setTimeout(resolve, ms));
+};
+
+app.use(async function(req, res, next) {
+  await sleep(1000);
+  next();
+});
 
 //use body parser to parse request body
 const bodyParser = require("body-parser");
