@@ -6,14 +6,29 @@ const cors = require("cors");
 app.use(cors());
 
 //simulate loading
-const sleep = ms => {
-  return new Promise(resolve => setTimeout(resolve, ms));
+
+/**
+ * @method
+ * @description sleeps for a given time
+ * @param {number} ms amount of time to sleep in milliseconds
+ * @returns an unresolved promise that must be waited for and that will
+ * resolve in the given time
+ */
+const sleep = (ms) => {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 };
 
-app.use(async function(req, res, next) {
-  await sleep(1000);
-  next();
-});
+app.use(
+  /**
+   * @callback sleepMiddleware
+   * @description adds a middleware to the express app that sleeps for a
+   * given time for the purpose of simulating loading
+   */
+  async function (req, res, next) {
+    await sleep(1000);
+    next();
+  }
+);
 
 //use body parser to parse request body
 const bodyParser = require("body-parser");
