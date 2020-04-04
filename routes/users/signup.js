@@ -14,7 +14,6 @@ const userSchema = Joi.object({
     .email()
     .required(),
   name: Joi.string()
-    .alphanum()
     .min(3)
     .max(30)
     .required(),
