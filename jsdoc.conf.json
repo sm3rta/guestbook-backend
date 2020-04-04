@@ -3,5 +3,6 @@
     "includePattern": ".+\\.js(doc)?$",
     "excludePattern": "(^|\\/|\\\\)_",
     "exclude": ["node_modules", "out"]
-  }
+  },
+  "plugins": ["plugins/markdown"]
 }
