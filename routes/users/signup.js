@@ -42,7 +42,10 @@ router.post("/", async (req, res) => {
   if (userExists)
     return res
       .status(409)
-      .send({ error: true, message: "User already exists" });
+      .send({
+        error: true,
+        message: "An account with the same email already exists"
+      });
 
   //all is well, create user document and add it to the database
   const user = new User({ name, email, password: hashPassword(password) });
