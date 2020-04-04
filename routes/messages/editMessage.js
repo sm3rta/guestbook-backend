@@ -11,6 +11,19 @@ const messageSchema = Joi.object({
   content: Joi.string().min(3).max(500).required(),
 });
 
+/**
+ * @method
+ * @description verifies that a message with gived ID exists
+ * @param {string} messageId message ID to check
+ * @returns - if message exists, returns message object
+ * - if not, returns null
+ */
+
+const checkThatMessageExists = async (messageId) => {
+  const message = await Message.findById(messageId);
+  return message;
+};
+
 router.patch(
   "/:messageId",
   /**
@@ -30,6 +43,12 @@ router.patch(
 
     const messageId = req.params.messageId;
     const { content } = req.body;
+
+    if (!(await checkThatMessageExists(messageId))) {
+      return res
+        .status(400)
+        .send({ error: true, message: "Message ID doesn't exist" });
+    }
 
     const editedMessage = await Message.findByIdAndUpdate(
       messageId,
