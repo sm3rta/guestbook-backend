@@ -61,7 +61,10 @@ describe("Test patch /messages route", () => {
   //correct data
   test("It should return 200 for correct data", async (done) => {
     request(app)
-      .delete(`/messages/${messageId}`)
+      .patch(`/messages/${messageId}`)
+      .send({
+        content: "Congratulations!",
+      })
       .then((response) => {
         expect(response.statusCode).toBe(200);
         done();
