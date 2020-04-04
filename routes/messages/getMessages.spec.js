@@ -14,6 +14,7 @@ describe("Test get /messages route", () => {
       .get("/messages")
       .then((response) => {
         expect(response.statusCode).toBe(200);
+        done();
       });
   });
 });
