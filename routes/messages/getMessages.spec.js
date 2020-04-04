@@ -8,8 +8,8 @@ const messagesRoute = require("./index");
 const app = express();
 app.use("/messages", messagesRoute);
 
-describe("Test the /messages path", () => {
-  test("It should response the GET method", () => {
+describe("Test get /messages route", () => {
+  test("It should return messages with status code 200", () => {
     request(app)
       .get("/messages")
       .then((response) => {
