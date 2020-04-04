@@ -16,6 +16,7 @@ const messageSchema = Joi.object({
 /**
  * @method
  * @description verifies that a user with gived ID exists
+ * @param {string} userId user ID to check
  * @returns - if user exists, returns user object
  * - if not, returns null
  */
