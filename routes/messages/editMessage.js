@@ -7,9 +7,7 @@ const messageSchema = Joi.object({
   content: Joi.string()
     .min(3)
     .max(500)
-    .required(),
-  submittedBy: Joi.string().required(),
-  date: Joi.date()
+    .required()
 });
 
 router.patch("/:messageId", async (req, res) => {
