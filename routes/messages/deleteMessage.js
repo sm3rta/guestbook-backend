@@ -19,22 +19,22 @@ router.delete(
     const messageId = req.params.messageId;
 
     const messageDeletionResult = await Message.findByIdAndDelete(messageId);
-    messageDeletionResult.replies.forEach((replyId) =>
-      Reply.findByIdAndDelete(replyId)
-    );
-    console.log("messageDeletionResult", messageDeletionResult);
 
-    if (messageDeletionResult) {
-      res.status(200).send({
-        error: false,
-        message: "Message deleted successfully",
-      });
-    } else {
-      res.status(400).send({
+    if (!messageDeletionResult) {
+      return res.status(400).send({
         error: true,
         message: "Message to be deleted doesn't exist",
       });
     }
+
+    messageDeletionResult.replies.forEach((replyId) =>
+      Reply.findByIdAndDelete(replyId)
+    );
+
+    res.status(200).send({
+      error: false,
+      message: "Message deleted successfully",
+    });
   }
 );
 
