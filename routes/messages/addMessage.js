@@ -19,8 +19,8 @@ const messageSchema = Joi.object({
  * @returns - if user exists, returns user object
  * - if not, returns null
  */
-const verifyThatUserExists = (userId) => {
-  const user = User.findById(userId);
+const verifyThatUserExists = async (userId) => {
+  const user = await User.findById(userId);
   return user;
 };
 
@@ -41,8 +41,8 @@ router.post(
     }
 
     const { content, submittedBy } = req.body;
-    if (!verifyThatUserExists(submittedBy)) {
-      return res
+    if (!(await verifyThatUserExists(submittedBy))) {
+      return res1
         .status(401)
         .send({ error: true, message: "User doesn't exist" });
     }
