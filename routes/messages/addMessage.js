@@ -42,7 +42,7 @@ router.post(
 
     const { content, submittedBy } = req.body;
     if (!(await verifyThatUserExists(submittedBy))) {
-      return res1
+      return res
         .status(401)
         .send({ error: true, message: "User doesn't exist" });
     }
