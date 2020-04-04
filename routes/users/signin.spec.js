@@ -11,6 +11,14 @@ app.use(bodyParser.json());
 app.use("/users", usersRoute);
 
 describe("Test post /users route", () => {
+  beforeAll(async () => {
+    await request(app).post("/users/signup").send({
+      name: "John Doe",
+      email: "test@example.com",
+      password: "ABCD@abc",
+    });
+  });
+
   //add user with invalid information
   //invalid email
   test("It should return 400 for malformed data", async (done) => {
@@ -29,23 +37,14 @@ describe("Test post /users route", () => {
   //sign in, should work
   test("It should return 200 for correct data", async (done) => {
     request(app)
-      .post("/users/signup")
+      .post("/users/signin")
       .send({
-        name: "John Doe",
         email: "test@example.com",
         password: "ABCD@abc",
       })
-      .then(() => {
-        request(app)
-          .post("/users/signin")
-          .send({
-            email: "test@example.com",
-            password: "ABCD@abc",
-          })
-          .then((response) => {
-            expect(response.statusCode).toBe(200);
-            done();
-          });
+      .then((response) => {
+        expect(response.statusCode).toBe(200);
+        done();
       });
   });
 
