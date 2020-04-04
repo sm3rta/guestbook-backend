@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
-const connectToDataBase = require("../utils/connectToDatabase");
 
-connectToDataBase();
 const { Schema } = mongoose;
 const messageSchema = new Schema({
   content: String,
