@@ -1,33 +1,45 @@
+/**
+ * @module
+ * @description adds the add Message route handler
+ */
 const express = require("express");
 const router = express.Router();
 const Joi = require("@hapi/joi");
 const Message = require("../../schemas/message");
 
 const messageSchema = Joi.object({
-  content: Joi.string()
-    .min(3)
-    .max(500)
-    .required(),
+  content: Joi.string().min(3).max(500).required(),
   submittedBy: Joi.string().required(),
-  date: Joi.date()
+  date: Joi.date(),
 });
 
-router.post("/", async (req, res) => {
-  const validation = messageSchema.validate(req.body);
-  if (validation.error) {
-    return res
-      .status(400)
-      .send({ error: true, message: validation.error.message });
+router.post(
+  "/",
+  /**
+   * @callback addMessageRequestHandler
+   * @description validates request data and sends
+   * - 400 if data is invalid
+   * - 200 if data is correct and the message has been saved successfully
+   */
+  async (req, res) => {
+    const validation = messageSchema.validate(req.body);
+    if (validation.error) {
+      return res
+        .status(400)
+        .send({ error: true, message: validation.error.message });
+    }
+
+    const { content, submittedBy } = req.body;
+    const message = new Message({
+      content,
+      submittedBy,
+      replies: [],
+    });
+    const result = await message.save();
+    res
+      .status(200)
+      .send({ error: false, message: "Message added successfully" });
   }
-
-  const { content, submittedBy } = req.body;
-  const message = new Message({
-    content,
-    submittedBy,
-    replies: []
-  });
-  const result = await message.save();
-  res.status(200).send({ error: false, message: "Message added successfully" });
-});
+);
 
 module.exports = router;
