@@ -7,6 +7,7 @@ const router = express.Router();
 const Joi = require("@hapi/joi");
 const Message = require("../../schemas/message");
 const Reply = require("../../schemas/reply");
+const User = require("../../schemas/user");
 
 const replySchema = Joi.object({
   content: Joi.string().min(3).max(500).required(),
@@ -32,16 +33,28 @@ router.post(
     }
 
     const { content, submittedBy, messageId } = req.body;
+
+    const message = await Message.findById(messageId);
+    const user = await User.findById(submittedBy);
+
+    if (!message)
+      return res
+        .status(400)
+        .send({ error: true, message: "Message ID doesn't exist" });
+    if (!user)
+      return res
+        .status(400)
+        .send({ error: true, message: "User ID doesn't exist" });
+
     const reply = new Reply({
       content,
       submittedBy,
     });
     const savedReply = await reply.save();
-    console.log("savedReply", savedReply);
-    const message = await Message.findById(messageId);
+
     message.replies.push(savedReply._id);
-    const savedMessage = await message.save();
-    console.log("savedMessage", savedMessage);
+    await message.save();
+
     res.status(200).send({ error: false, message: "Reply added successfully" });
   }
 );
