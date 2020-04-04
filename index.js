@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const cors = require("cors");
+const config = require("config");
 
 //connect to database
 const connectToDataBase = require("./utils/connectToDatabase");
@@ -47,7 +48,7 @@ app.use("/users", usersRoute);
 app.use("/messages", messagesRoute);
 app.use("/replies", repliesRoute);
 
-const port = process.env.PORT || 3001;
+const port = config.get("port") || 3001;
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
 });

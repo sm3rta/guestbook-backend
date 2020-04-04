@@ -1,0 +1,5 @@
+{
+  "jwtPrivateKey": "insertPrivateKeyHere",
+  "dbPath": "mongodb://localhost/guestbook",
+  "port": 3001
+}

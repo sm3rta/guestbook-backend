@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const dbPath = "mongodb://localhost/guestbook";
+const dbPath = require("config").get("dbPath");
 
 /**
  * @method
