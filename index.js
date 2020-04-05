@@ -8,7 +8,11 @@ const connectToDataBase = require("./utils/connectToDatabase");
 connectToDataBase();
 
 //enable cors
-app.use(cors());
+app.use(
+  cors({
+    exposedHeaders: "x-auth-token",
+  })
+);
 
 //simulate loading
 
@@ -43,11 +47,12 @@ app.use(bodyParser.json({ type: "*/*" }));
 const usersRoute = require("./routes/users");
 const messagesRoute = require("./routes/messages");
 const repliesRoute = require("./routes/replies");
+const getMessagesRoute = require("./routes/getMessages");
 //add subroutes to the application
 app.use("/users", usersRoute);
 app.use("/messages", messagesRoute);
 app.use("/replies", repliesRoute);
-
+app.use("/get-messages", getMessagesRoute);
 const port = config.get("port") || 3001;
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
