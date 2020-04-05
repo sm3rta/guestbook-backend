@@ -8,7 +8,8 @@ const Joi = require("@hapi/joi");
 const Message = require("../../schemas/message");
 const Reply = require("../../schemas/reply");
 const User = require("../../schemas/user");
-
+const authMiddleware = require("../../middleware/auth");
+router.use(authMiddleware);
 const replySchema = Joi.object({
   content: Joi.string().min(3).max(500).required(),
   submittedBy: Joi.string().required(),
