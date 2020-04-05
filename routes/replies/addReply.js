@@ -12,7 +12,6 @@ const authMiddleware = require("../../middleware/auth");
 router.use(authMiddleware);
 const replySchema = Joi.object({
   content: Joi.string().min(3).max(500).required(),
-  submittedBy: Joi.string().required(),
   messageId: Joi.string().required(),
   date: Joi.date(),
 });
@@ -33,11 +32,11 @@ router.post(
         .send({ error: true, message: validation.error.message });
     }
 
-    const { content, submittedBy, messageId } = req.body;
+    const { content, messageId } = req.body;
+    const { _id: userId } = req.user;
 
     const message = await Message.findById(messageId);
-    const user = await User.findById(submittedBy);
-
+    const user = await User.findById(userId);
     if (!message)
       return res
         .status(400)
@@ -49,7 +48,7 @@ router.post(
 
     const reply = new Reply({
       content,
-      submittedBy,
+      submittedBy: userId,
     });
     const savedReply = await reply.save();
 

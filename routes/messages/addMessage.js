@@ -10,7 +10,6 @@ const User = require("../../schemas/user");
 
 const messageSchema = Joi.object({
   content: Joi.string().min(3).max(500).required(),
-  submittedBy: Joi.string().required(),
   date: Joi.date(),
 });
 /**
@@ -41,8 +40,12 @@ router.post(
         .send({ error: true, message: validation.error.message });
     }
 
-    const { content, submittedBy } = req.body;
-    if (!(await verifyThatUserExists(submittedBy))) {
+    const { content } = req.body;
+    const { _id: submittedBy } = req.user;
+
+    const user = await verifyThatUserExists(submittedBy);
+
+    if (!user) {
       return res
         .status(401)
         .send({ error: true, message: "User doesn't exist" });
