@@ -4,7 +4,7 @@ const Message = require("../../schemas/message");
 const request = require("supertest");
 const express = require("express");
 const bodyParser = require("body-parser");
-
+require("../../utils/connectToDatabase")();
 const messagesRoute = require("./index");
 const usersRoute = require("../users");
 const app = express();
@@ -16,43 +16,50 @@ describe("Test delete /messages route", () => {
   //create an account to post a message with
   let userId;
   let messageId;
+  let token;
   beforeEach(async () => {
     //add a test user
-    await request(app).post("/users/signup").send({
+    const user = new User({
       name: "John Doe",
       email: "test@example.com",
       password: "ABCD@abc",
     });
-    const user = await User.findOne({ email: "test@example.com" });
+    const savedUser = await user.save();
+    token = savedUser.generateAuthToken();
     // get user ID
-    userId = user._id;
+    userId = savedUser._id;
     //add message with that ID
-    await request(app).post("/messages").send({
+    await request(app)
+      .post("/messages")
+      .send({})
+      .set({ "x-auth-token": token });
+    //find that message
+    const message = new Message({
       content: "Congratulations",
       submittedBy: userId,
+      replies: [],
     });
-    //find that message
-    const message = await Message.findOne({ submittedBy: userId });
+    const savedMessage = await message.save();
     //get that message ID
-    messageId = message._id;
+    messageId = savedMessage._id;
   });
 
   //wrong data
-  test("It should return 400 if message doesn't exist", async (done) => {
+  test("It should return 400 if message doesn't exist", async () => {
     request(app)
       .delete(`/messages/222222222222222222222222`)
+      .set({ "x-auth-token": token })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
   //correct data
-  test("It should return 200 for correct data", async (done) => {
+  test("It should return 200 for correct data", async () => {
     request(app)
       .delete(`/messages/${messageId}`)
+      .set({ "x-auth-token": token })
       .then((response) => {
         expect(response.statusCode).toBe(200);
-        done();
       });
   });
 

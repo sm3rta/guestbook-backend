@@ -4,7 +4,8 @@ const Message = require("../../schemas/message");
 const request = require("supertest");
 const express = require("express");
 const bodyParser = require("body-parser");
-
+require("../../utils/connectToDatabase")();
+const hashPassword = require("../../utils/hashPassword");
 const usersRoute = require("./index");
 const app = express();
 app.use(bodyParser.json());
@@ -12,16 +13,17 @@ app.use("/users", usersRoute);
 
 describe("Test post /users route", () => {
   beforeAll(async () => {
-    await request(app).post("/users/signup").send({
+    const user = User({
       name: "John Doe",
       email: "test@example.com",
-      password: "ABCD@abc",
+      password: hashPassword("ABCD@abc"),
     });
+    const savedUser = await user.save();
   });
 
   //add user with invalid information
   //invalid email
-  test("It should return 400 for malformed data", async (done) => {
+  test("It should return 400 for malformed data", async () => {
     request(app)
       .post("/users/signin")
       .send({
@@ -30,12 +32,11 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
 
   //sign in, should work
-  test("It should return 200 for correct data", async (done) => {
+  test("It should return 200 for correct data", async () => {
     request(app)
       .post("/users/signin")
       .send({
@@ -44,7 +45,6 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(200);
-        done();
       });
   });
 

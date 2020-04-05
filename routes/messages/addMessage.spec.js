@@ -4,7 +4,7 @@ const Message = require("../../schemas/message");
 const request = require("supertest");
 const express = require("express");
 const bodyParser = require("body-parser");
-
+require("../../utils/connectToDatabase")();
 const messagesRoute = require("./index");
 const usersRoute = require("../users");
 const app = express();
@@ -14,55 +14,54 @@ app.use("/users", usersRoute);
 
 describe("Test post /messages route", () => {
   //create an account to post a message with
-  let userId;
+
+  let token;
   beforeAll(async () => {
-    const res = await request(app).post("/users/signup").send({
+    const user = User({
       name: "John Doe",
       email: "test@example.com",
       password: "ABCD@abc",
     });
-    const user = await User.findOne({ email: "test@example.com" });
-    userId = user._id;
+    savedUser = await user.save();
+    token = savedUser.generateAuthToken();
   });
 
   //user ID that doesn't exist
-  test("It should return 401 if user doesn't exist", async (done) => {
+  test("It should return 401 if token is bad", async () => {
     request(app)
-      .post("/messages/")
+      .post("/messages")
       .send({
         content: "Congratulations!",
-        submittedBy: "222222222222222222222222",
       })
+      .set({ "x-auth-token": "22222" })
       .then((response) => {
-        expect(response.statusCode).toBe(401);
-        done();
+        expect(response.statusCode).toBe(400);
       });
   });
 
   //short or empty content
-  test("It should return 400 for malformed data", async (done) => {
+  test("It should return 400 for malformed data", async () => {
     request(app)
-      .post("/messages/")
+      .post("/messages")
       .send({
         content: "",
-        submittedBy: userId,
       })
+      .set({ "x-auth-token": token })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
+
   //correct data
-  test("It should return 200 for correct data", async (done) => {
+  test("It should return 200 for correct data", async () => {
     request(app)
-      .post("/messages/")
+      .post("/messages")
       .send({
         content: "Congratulations!",
-        submittedBy: userId,
       })
+      .set({ "x-auth-token": token })
       .then((response) => {
         expect(response.statusCode).toBe(200);
-        done();
       });
   });
 
@@ -71,7 +70,7 @@ describe("Test post /messages route", () => {
     await Reply.deleteMany({});
     await Message.deleteMany({});
   }
-  //   afterAll(async () => {
-  //     await removeAllCollections();
-  //   });
+  afterAll(async () => {
+    await removeAllCollections();
+  });
 });

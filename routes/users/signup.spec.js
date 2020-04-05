@@ -4,7 +4,7 @@ const Message = require("../../schemas/message");
 const request = require("supertest");
 const express = require("express");
 const bodyParser = require("body-parser");
-
+require("../../utils/connectToDatabase")();
 const usersRoute = require("./index");
 const app = express();
 app.use(bodyParser.json());
@@ -13,7 +13,7 @@ app.use("/users", usersRoute);
 describe("Test post /users route", () => {
   //add user with invalid information
   //invalid email
-  test("It should return 400 for malformed data", async (done) => {
+  test("It should return 400 for malformed data", async () => {
     request(app)
       .post("/users/signup")
       .send({
@@ -23,11 +23,10 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
   //short password
-  test("It should return 400 for malformed data", async (done) => {
+  test("It should return 400 for malformed data", async () => {
     request(app)
       .post("/users/signup")
       .send({
@@ -37,12 +36,11 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
 
   //weak password
-  test("It should return 400 for malformed data", async (done) => {
+  test("It should return 400 for malformed data", async () => {
     request(app)
       .post("/users/signup")
       .send({
@@ -52,11 +50,10 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
   //too long name
-  test("It should return 400 for malformed data", async (done) => {
+  test("It should return 400 for malformed data", async () => {
     request(app)
       .post("/users/signup")
       .send({
@@ -66,11 +63,10 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
   //invalid email
-  test("It should return 400 for malformed data", async (done) => {
+  test("It should return 400 for malformed data", async () => {
     request(app)
       .post("/users/signup")
       .send({
@@ -80,12 +76,11 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
 
   //add user with good data, should work
-  test("It should return 200 for correct data", async (done) => {
+  test("It should return 200 for correct data", async () => {
     request(app)
       .post("/users/signup")
       .send({
@@ -95,11 +90,10 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(200);
-        done();
       });
   });
   // add the same user again
-  test("It should return 409 for already existing emails", async (done) => {
+  test("It should return 409 for already existing emails", async () => {
     request(app)
       .post("/users/signup")
       .send({
@@ -109,7 +103,6 @@ describe("Test post /users route", () => {
       })
       .then((response) => {
         expect(response.statusCode).toBe(409);
-        done();
       });
   });
 

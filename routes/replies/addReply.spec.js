@@ -4,7 +4,7 @@ const Message = require("../../schemas/message");
 const request = require("supertest");
 const express = require("express");
 const bodyParser = require("body-parser");
-
+require("../../utils/connectToDatabase")();
 const messagesRoute = require("./index");
 const usersRoute = require("../users");
 const repliesRoute = require("../replies");
@@ -15,9 +15,10 @@ app.use("/users", usersRoute);
 app.use("/replies", repliesRoute);
 
 describe("Test post /replies route", () => {
-  //create an account to post a message with
   let userId;
   let messageId;
+  let token;
+
   beforeAll(async () => {
     //add a test user
     const user = User({
@@ -27,8 +28,8 @@ describe("Test post /replies route", () => {
     });
     const savedUser = await user.save();
     userId = savedUser._id;
-
-    //add message with that ID
+    token = savedUser.generateAuthToken();
+    // add message with that ID
     const message = Message({
       content: "Congratulations",
       submittedBy: userId,
@@ -39,59 +40,55 @@ describe("Test post /replies route", () => {
     console.log("messageId", messageId);
   });
 
-  test("It should return 400 if message content is missing", async (done) => {
+  test("It should return 400 if message content is missing", async () => {
     request(app)
       .post("/replies")
       .send({
         content: "",
-        submittedBy: userId,
         messageId: messageId,
       })
+      .set({ "x-auth-token": token })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
 
-  test("It should return 400 if message ID doesn't exist", async (done) => {
+  test("It should return 400 if message ID doesn't exist", async () => {
     request(app)
       .post("/replies")
       .send({
         content: "Congratulations!",
-        submittedBy: userId,
         messageId: "222222222222222222222222",
       })
+      .set({ "x-auth-token": token })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
 
-  test("It should return 400 if user ID doesn't exist", async (done) => {
+  test("It should return 400 if token is bad", async () => {
     request(app)
       .post("/replies")
       .send({
         content: "Congratulations!",
-        submittedBy: "222222222222222222222222",
         messageId: messageId,
       })
+      .set({ "x-auth-token": "aaaaaaa" })
       .then((response) => {
         expect(response.statusCode).toBe(400);
-        done();
       });
   });
   //correct data
-  test("It should return 200 for correct data", async (done) => {
+  test("It should return 200 for correct data", async () => {
     request(app)
       .post("/replies")
       .send({
         content: "Congratulations!",
-        submittedBy: userId,
         messageId: messageId,
       })
+      .set({ "x-auth-token": token })
       .then((response) => {
         expect(response.statusCode).toBe(200);
-        done();
       });
   });
 
