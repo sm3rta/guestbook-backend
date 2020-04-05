@@ -47,15 +47,16 @@ router.post(
 
     //check if user alreeady exists
     const user = await checkUserCredentials(req.body);
-
-    if (user) {
-      user.password = undefined;
-      res
-        .status(200)
-        .send({ error: false, message: "User login successful", data: user });
-    } else {
-      res.status(401).send({ error: true, message: "Wrong email or password" });
-    }
+    if (!user)
+      return res
+        .status(401)
+        .send({ error: true, message: "Wrong email or password" });
+    user.password = undefined;
+    const token = user.generateAuthToken();
+    res
+      .set({ "x-auth-token": token })
+      .status(200)
+      .send({ error: false, message: "User login successful", data: user });
   }
 );
 

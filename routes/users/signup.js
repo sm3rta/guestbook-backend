@@ -67,7 +67,8 @@ router.post(
     const savedUser = await user.save();
     //delete password from object
     savedUser.password = undefined;
-    res.status(200).send({
+    const token = user.generateAuthToken();
+    res.set({ "x-auth-token": token }).status(200).send({
       error: false,
       message: "User added successfully",
       data: savedUser,
